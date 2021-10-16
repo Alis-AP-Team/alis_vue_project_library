@@ -1,10 +1,10 @@
 <template>
-  <v-app v-bind:style="{ background: $vuetify.theme.themes.light.background }">
-    <Header :tabs="[]" :appName="'alis_ Component Library'" />
+  <v-app :style="{ background: $vuetify.theme.themes.light.background }">
+    <LayoutHeader :tabs="[]" app-name="alis_ Component Library" />
     <v-main>
       <!-- bottom padding 48px because of fixed footer -->
       <v-container class="pt-6 pb-12">
-        <library-container />
+        <LibraryContainer />
       </v-container>
     </v-main>
     <Footer />
@@ -12,14 +12,15 @@
 </template>
 
 <script>
-import Header from "@/layout/Header";
-import LibraryContainer from "./views/LibraryContainer";
+import LayoutHeader from './layout/LayoutHeader';
+import LibraryContainer from './views/LibraryContainer';
 
-export default {
-  name: "App",
-
-  components: {
-    Header,
+export default
+{
+  name: 'App',
+  components:
+  {
+    LayoutHeader,
     LibraryContainer,
   },
 };

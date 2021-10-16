@@ -1,38 +1,42 @@
-import Vue from "vue";
-import VueRouter from "vue-router";
-import Library from "../views/Library";
-import ReturnComparison from "../projectLibrary/AAA/ReturnComparison/ReturnComparison";
-import LibraryContainer from "../views/LibraryContainer";
-import Projects from "../views/Projects";
-
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import Library from '../views/Library';
+import ReturnComparison from '../projectLibrary/AAA/ReturnComparison/AAA';
+import LibraryContainer from '../views/LibraryContainer';
+import Projects from '../views/Projects';
 
 Vue.use(VueRouter);
 
 const routes = [
 
   {
-    path: "/",
-    name: "LibraryContainer",
-    redirect: {name: "Library"},
+    path: '/',
+    name: 'LibraryContainer',
+    redirect: { name: 'Library' },
     component: LibraryContainer,
     children: [
       {
-        path: "/library",
-        name: "Library",
+        path: '/library',
+        name: 'Library',
         component: Library,
       },
       {
-        path: "projects",
-        name: "Projects",
+        path: 'projects',
+        name: 'Projects',
         component: Projects,
         children: [
           {
             // Path Format: {{projectID}}/{{containerComponent}}
-            path: "AAA/return-comparison",
+            path: 'AAA/return-comparison',
             // Name Format: {{projectID}}
-            name: "AAA",
+            name: 'AAA',
             // Component Format: {{containerComponent}}
             component: ReturnComparison,
+          },
+          {
+            path: 'AAB/AAB',
+            name: 'AAB',
+            component: () => import('../projectLibrary/AAB/RollingHistograms/AAB'),
           },
         ]
       },
@@ -41,10 +45,9 @@ const routes = [
 ];
 
 const router = new VueRouter({
-  mode: "history",
+  mode: 'history',
   base: process.env.BASE_URL,
   routes,
 });
 
 export default router;
-
