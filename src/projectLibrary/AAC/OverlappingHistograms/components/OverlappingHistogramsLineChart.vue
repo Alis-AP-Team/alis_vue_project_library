@@ -24,7 +24,7 @@ const paletteAdobe = [ // eslint-disable-line no-unused-vars
   '#DFBF03',
   '#268D6C',
   '#CB6F10',
-  '#000000',
+  '#C0C0C0',
 ];
 
 const paletteDutch = [ // eslint-disable-line no-unused-vars
