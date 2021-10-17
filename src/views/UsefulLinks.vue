@@ -6,7 +6,7 @@
       <p class="subheading font-weight-regular">
         For help and collaboration with other Vuetify developers,
         <br>please join their online
-        <a href="https://community.vuetifyjs.com" target="_blank">Discord Community</a>
+        <a href="https://community.vuetifyjs.com" target="_blank" rel="noopener noreferrer">Discord Community</a>
       </p>
     </v-col>
     <v-col class="mb-5" cols="12">
@@ -21,6 +21,7 @@
           :href="eco.href"
           class="subheading mx-3"
           target="_blank"
+          rel="noopener noreferrer"
         >
           {{ eco.text }}
         </a>
@@ -36,6 +37,7 @@
           :href="next.href"
           class="subheading mx-3"
           target="_blank"
+          rel="noopener noreferrer"
         >
           {{ next.text }}
         </a>
@@ -52,6 +54,7 @@
           :href="link.href"
           class="subheading mx-3"
           target="_blank"
+          rel="noopener noreferrer"
         >
           {{ link.text }}
         </a>

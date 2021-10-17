@@ -24,14 +24,14 @@
       <v-btn
         class="font-weight-regular"
         text
-        @click="routeToView('Library')"
+        :to="routeToView('Library')"
       >
         Component Library
       </v-btn>
       <!--      <v-btn -->
       <!--          class="font-weight-regular" -->
       <!--          text -->
-      <!--          @click="routeToView('UsefulLinks')" -->
+      <!--          :to="routeToView('UsefulLinks')" -->
       <!--      > -->
       <!--        Useful Links -->
       <!--      </v-btn> -->

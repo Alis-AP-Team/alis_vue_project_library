@@ -4,7 +4,7 @@
     <v-main>
       <!-- bottom padding 48px because of fixed footer -->
       <v-container class="pt-6 pb-12">
-        <LibraryContainer />
+        <router-view />
       </v-container>
     </v-main>
     <Footer />
@@ -13,7 +13,6 @@
 
 <script>
 import LayoutHeader from './layout/LayoutHeader';
-import LibraryContainer from './views/LibraryContainer';
 
 export default
 {
@@ -21,7 +20,6 @@ export default
   components:
   {
     LayoutHeader,
-    LibraryContainer,
   },
 };
 </script>

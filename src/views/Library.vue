@@ -40,7 +40,7 @@
               icon
               size="sm"
               :class="getMoreClass(item.projectID)"
-              @click="onMoreClick(item)"
+              :to="routeToView(item.projectID)"
             >
               <v-icon small>
                 navigate_next
@@ -165,7 +165,19 @@ export default
           developerLinkedin: 'https://www.linkedin.com/in/ivogelov-web-developer',
           projectDescription: 'Rolling Histograms Visual',
           projectCategory: 'chart',
-          devTime: '3 hours',
+          devTime: '4 hours',
+          comments: '',
+        },
+        {
+          projectID: 'AAC',
+          containerComponentName: 'OverlappingHistograms',
+          developerName: 'Ivaylo Gelov',
+          developerEmail: 'ivo_gelov@gmx.net',
+          developerGithub: '',
+          developerLinkedin: 'https://www.linkedin.com/in/ivogelov-web-developer',
+          projectDescription: 'Overlapping Histograms Visual',
+          projectCategory: 'chart',
+          devTime: '2 hours',
           comments: '',
         },
       ],
@@ -175,26 +187,20 @@ export default
   {
     groupBy()
     {
-      if (this.projects.length)
-      {
-        return 'name';
-      }
-      else
-      {
-        return null;
-      }
+      return this.projects.length > 0 ? 'name' : null;
     },
     tableHeight()
     {
       return this.windowHeight - 305;
     },
   },
-  mounted()
+  created()
   {
-    window.addEventListener('resize', () =>
-    {
-      this.windowHeight = window.innerHeight;
-    });
+    window.addEventListener('resize', this.onResize, false);
+  },
+  beforeDestroy()
+  {
+    window.removeEventListener('resize', this.onResize, false);
   },
   methods:
   {
@@ -203,10 +209,10 @@ export default
       const selected = this.selected.some(d => d.id === id);
       return `more-btn ${selected ? 'selected-row' : ''}`;
     },
-    onMoreClick(item)
+    onResize()
     {
-      this.routeToView(item.projectID);
-    },
+      this.windowHeight = window.innerHeight;
+    }
   },
 };
 </script>

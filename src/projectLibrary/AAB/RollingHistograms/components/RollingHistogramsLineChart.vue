@@ -3,7 +3,7 @@
     <div class="d-flex justify-end pb-4">
       <v-select v-model="currentGroup" :items="groupsList" label="Choose a group" outlined dense hide-details class="flex-grow-0" menu-props="offsetY" />
     </div>
-    <div class="flex-grow-1 d-flex overflow-auto">
+    <div class="flex-grow-1 d-flex overflow-auto grey lighten-4 pl-4 pt-4">
       <HistogramChart v-for="(histogram,index) in histogramsList" :key="index" :histogram-data="histogram" class="mr-4 mb-3" />
     </div>
   </div>

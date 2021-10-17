@@ -38,6 +38,11 @@ const routes = [
             name: 'AAB',
             component: () => import('../projectLibrary/AAB/RollingHistograms/AAB'),
           },
+          {
+            path: 'AAC/AAC',
+            name: 'AAC',
+            component: () => import('../projectLibrary/AAC/OverlappingHistograms/AAC'),
+          },
         ]
       },
     ]

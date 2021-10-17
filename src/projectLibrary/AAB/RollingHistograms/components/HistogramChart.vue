@@ -1,7 +1,7 @@
 <template>
-  <v-card outlined class="px-2 d-flex flex-column" min-height="650" :min-width="histogramData.bins.length * 60">
-    <v-card-title class="pa-2 justify-center">{{ caption }}</v-card-title>
-    <div ref="chart" class="rolling_histogram flex-grow-1" />
+  <v-card outlined class="d-flex flex-column" min-height="650" :min-width="histogramData.bins.length * 55">
+    <v-card-title class="pa-2 justify-center primary--text lighten-1">{{ caption }}</v-card-title>
+    <div ref="chart" class="rolling_histogram flex-grow-1 px-2" />
   </v-card>
 </template>
 
@@ -50,12 +50,6 @@ export default
   mounted()
   {
     const chart = am4core.create(this.$refs.chart, am4charts.XYChart);
-    chart.data = this.histogramData.bins.map(item =>
-    {
-      item.category = item.bound.replace('[', '[['); // we must escape the square brackets - amCharts uses them for formatting
-      item.tooltip = item.category.replace(',', ',\n'); // we want short/narrow tooltips
-      return item;
-    });
 
     const xAxis = chart.xAxes.push(new am4charts.CategoryAxis());
     xAxis.dataFields.category = 'category';
@@ -78,7 +72,7 @@ export default
     valueAxis.max = 1;
     valueAxis.renderer.minGridDistance = 10;
 
-    // add cursors and allow zooming in/out on X axis by mouse selection over the chart area
+    // add cursor on both axies
     const cursor = new am4charts.XYCursor();
     cursor.behavior = 'none';
     cursor.fontSize = 12;
@@ -93,12 +87,18 @@ export default
     lineSeries.tooltip.background.strokeWidth = 0;
 
     this.chart = chart;
+    this.updateChart();
   },
   methods:
     {
       updateChart()
       {
-
+        this.chart.data = this.histogramData.bins.map(item =>
+        {
+          item.category = item.bound.replace('[', '[['); // we must escape the square brackets - amCharts uses them for formatting
+          item.tooltip = item.category.replace(',', ',\n'); // we want short/narrow tooltips
+          return item;
+        });
       }
     }
 };

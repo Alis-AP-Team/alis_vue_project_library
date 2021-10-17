@@ -19,21 +19,11 @@ export default
     //the existing state driven query.
     routeToView(routeName, params = null, keepStateQuery = true, updatedQuery = null)
     {
-      if (this.$router.currentRoute.name === routeName)
-      {
-        return;
-      }
-
-      const pushArgs = {
-        name: routeName
+      return {
+        name: routeName,
+        params,
+        query: Object.assign({}, keepStateQuery ? this.$router.currentRoute.query : {}, updatedQuery)
       };
-      if (params)
-      {
-        pushArgs.params = params;
-      }
-      pushArgs.query = Object.assign({}, keepStateQuery ? this.$router.currentRoute.query : {}, updatedQuery);
-
-      this.$router.push(pushArgs);
     },
   }
 };
