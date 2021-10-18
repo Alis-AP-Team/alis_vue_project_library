@@ -177,7 +177,7 @@ export default
           developerLinkedin: 'https://www.linkedin.com/in/ivogelov-web-developer',
           projectDescription: 'Overlapping Histograms Visual',
           projectCategory: 'chart',
-          devTime: '5 hours',
+          devTime: '6 hours',
           comments: '',
         },
       ],
