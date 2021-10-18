@@ -68,6 +68,7 @@ export default
       currentGroup: null,
       samplingRate: 1,
       chart: null,
+      hoveredSeries: {},
     };
   },
   computed:
@@ -112,7 +113,7 @@ export default
       histogramsList()
       {
         this.updateChart();
-      }
+      },
     },
   created()
   {
@@ -127,7 +128,9 @@ export default
   },
   mounted()
   {
+    this.hoveredSeries = {};
     const chart = am4core.create(this.$refs.chart, am4charts.XYChart);
+    chart.maskBullets = false;
 
     const xAxis = chart.xAxes.push(new am4charts.CategoryAxis());
     xAxis.dataFields.category = 'category';
@@ -164,17 +167,6 @@ export default
     legend.width = 210;
     legend.scrollable = true;
     legend.labels.template.truncate = false;
-
-    // dim line series when hovering the legend
-    legend.markers.template.states.create('dimmed').properties.opacity = 0.3;
-    legend.labels.template.states.create('dimmed').properties.opacity = 0.3;
-
-    legend.itemContainers.template.events.on('over', event =>
-    {
-      this.processOver(event.target.dataItem.dataContext);
-    });
-
-    legend.itemContainers.template.events.on('out', this.processOut);
 
     // use square markers instead of the default horizontal lines
     legend.useDefaultMarker = true;
@@ -215,34 +207,37 @@ export default
 
       const hoverState = segment.states.create('hover');
       hoverState.properties.strokeWidth = 4;
+      hoverState.properties.strokeOpacity = 1;
 
       const dimmed = segment.states.create('dimmed');
-      dimmed.properties.stroke = am4core.color('#dadada');
+      dimmed.properties.strokeWidth = 2;
+      dimmed.properties.strokeOpacity = 0.2;
 
-      segment.events.on('over', event =>
-      {
-        this.processOver(event.target.parent.parent.parent);
-      });
-
-      segment.events.on('out', this.processOut);
-      /*
       // Dim series on tooltip show/hide
       lineSeries.tooltip.events.on('shown', (ev) =>
       {
-        chart.series.each(series =>
-        {
-          series.isDimmed = series !== ev.target.targetSprite;
-          toggleSeries(series, series !== ev.target.targetSprite);
-        });
+        const hoveredSet = this.hoveredSeries;
+        hoveredSet[ev.target.targetSprite.name] = true;
+        if (Object.keys(hoveredSet).length === 1) this.processOver(ev.target.targetSprite);
       });
-      lineSeries.tooltip.events.on('hidden', () =>
+      lineSeries.tooltip.events.on('hidden', (ev) =>
       {
-        chart.series.each(series =>
+        if (!ev.target.targetSprite) return;
+        const hoveredSet = this.hoveredSeries;
+        delete hoveredSet[ev.target.targetSprite.name];
+        if (Object.keys(hoveredSet).length > 0)
         {
-          toggleSeries(series, false);
-        });
+          chart.series.each(series =>
+          {
+            series.segments.each(segment =>
+            {
+              segment.setState(hoveredSet[series.name] ? 'hover' : 'dimmed');
+            });
+          });
+        }
+        else this.processOut();
       });
-      */
+
       const bullet = lineSeries.bullets.push(new am4charts.CircleBullet());
       bullet.circle.stroke = am4core.color('#fff');
       bullet.circle.strokeWidth = 2;
@@ -285,13 +280,10 @@ export default
       processOver(hoveredSeries)
       {
         hoveredSeries.toFront();
-        hoveredSeries.segments.each(function(segment)
+        hoveredSeries.segments.each(segment =>
         {
           segment.setState('hover');
         });
-
-        hoveredSeries.legendDataItem.marker.setState('default');
-        hoveredSeries.legendDataItem.label.setState('default');
 
         this.chart.series.each(series =>
         {
@@ -301,9 +293,6 @@ export default
             {
               segment.setState('dimmed');
             });
-            series.bulletsContainer.setState('dimmed');
-            series.legendDataItem.marker.setState('dimmed');
-            series.legendDataItem.label.setState('dimmed');
           }
         });
       },
@@ -315,22 +304,10 @@ export default
           {
             segment.setState('default');
           });
-          series.bulletsContainer.setState('default');
-          series.legendDataItem.marker.setState('default');
-          series.legendDataItem.label.setState('default');
         });
       },
     }
 };
-
-/*
-function toggleSeries(series, dim)
-{
-  series.segments.each(segment =>
-  {
-    segment.isHover = dim;
-  });
-}*/
 </script>
 
 <style lang="scss">
