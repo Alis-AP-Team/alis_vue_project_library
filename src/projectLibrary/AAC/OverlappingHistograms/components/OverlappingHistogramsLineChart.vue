@@ -163,6 +163,7 @@ export default
     legend.valign = 'top';
     legend.width = 210;
     legend.scrollable = true;
+    legend.labels.template.truncate = false;
 
     // dim line series when hovering the legend
     legend.markers.template.states.create('dimmed').properties.opacity = 0.3;
