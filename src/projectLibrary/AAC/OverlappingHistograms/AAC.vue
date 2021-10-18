@@ -1,5 +1,5 @@
 <template>
-  <OverlappingHistogramsLineChart :data-object="histogramsData" style="min-height: 500px;" />
+  <OverlappingHistogramsLineChart :data-object="histogramsData" style="min-height: 800px;" />
 </template>
 
 <script>
