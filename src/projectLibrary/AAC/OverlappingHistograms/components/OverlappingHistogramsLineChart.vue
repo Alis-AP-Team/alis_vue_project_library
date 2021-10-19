@@ -112,7 +112,11 @@ export default
         },
       histogramsList()
       {
-        this.updateChart();
+        // give some time to the drop-down to perform the "close" animation - otherwise the drop-down is not closed until the chart redraws with the new data
+        setTimeout(() =>
+        {
+          this.updateChart();
+        }, 50);
       },
     },
   created()
@@ -130,6 +134,7 @@ export default
   {
     const chart = am4core.create(this.$refs.chart, am4charts.XYChart);
     chart.maskBullets = false;
+    chart.events.on('out', this.processOut); // remove dimming when the mouse goes outside of the chart
 
     const xAxis = chart.xAxes.push(new am4charts.CategoryAxis());
     xAxis.dataFields.category = 'category';
@@ -178,73 +183,6 @@ export default
     marker.stroke = am4core.color('#222');
     chart.legend = legend;
 
-    // create series
-    this.histogramsList.forEach((histogram, index) =>
-    {
-      const lineSeries = chart.series.push(new am4charts.LineSeries());
-      lineSeries.dataFields.categoryX = 'category';
-      lineSeries.dataFields.valueY = 'frequency_' + index;
-      lineSeries.dataFields.counter = 'count_' + index;
-      lineSeries.name = `${histogram.startDate} - ${histogram.endDate}`;
-
-      lineSeries.tooltipText = '[' + lineSeries.stroke.hex + ']●[/] ' + lineSeries.name + ': Freq = {frequency_' + index + '.formatNumber("#.000")}, Cnt = {count_' + index + '}';
-      lineSeries.tooltip.fontSize = 12;
-      lineSeries.tooltip.background.strokeWidth = 0;
-      lineSeries.tooltip.getFillFromObject = false;
-      lineSeries.tooltip.background.fill = am4core.color('#fff');
-      lineSeries.tooltip.label.fill = am4core.color('#000');
-      // Prevent cross-fading of tooltips
-      lineSeries.tooltip.defaultState.transitionDuration = 0;
-      lineSeries.tooltip.hiddenState.transitionDuration = 0;
-
-      lineSeries.strokeWidth = 2;
-      lineSeries.strokeOpacity = 1;
-
-      // Enable interactions on series segments
-      const segment = lineSeries.segments.template;
-      segment.interactionsEnabled = true;
-
-      const hoverState = segment.states.create('hover');
-      hoverState.properties.strokeWidth = 4;
-      hoverState.properties.strokeOpacity = 1;
-
-      const dimmed = segment.states.create('dimmed');
-      dimmed.properties.strokeWidth = 2;
-      dimmed.properties.strokeOpacity = 0.2;
-
-      // Dim series on tooltip show/hide
-      lineSeries.tooltip.events.on('shown', (ev) =>
-      {
-        const hoveredSet = this.hoveredSeries;
-        hoveredSet[ev.target.targetSprite.name] = true;
-        if (Object.keys(hoveredSet).length === 1) this.processOver(ev.target.targetSprite);
-      });
-      lineSeries.tooltip.events.on('hidden', (ev) =>
-      {
-        if (!ev.target.targetSprite) return;
-        const hoveredSet = this.hoveredSeries;
-        delete hoveredSet[ev.target.targetSprite.name];
-        if (Object.keys(hoveredSet).length > 0)
-        {
-          chart.series.each(series =>
-          {
-            series.segments.each(segment =>
-            {
-              segment.setState(hoveredSet[series.name] ? 'hover' : 'dimmed');
-            });
-          });
-        }
-        else this.processOut();
-      });
-
-      const bullet = lineSeries.bullets.push(new am4charts.CircleBullet());
-      bullet.circle.stroke = am4core.color('#fff');
-      bullet.circle.strokeWidth = 2;
-      bullet.scale = 0;
-      const hs = bullet.states.create('hover');
-      hs.properties.scale = 1;
-    });
-
     this.chart = chart;
     this.updateChart();
   },
@@ -253,6 +191,15 @@ export default
       updateChart()
       {
         this.hoveredSeries = {};
+        const series = this.chart.series;
+        // we have to reset the series AND the colors - because we do not recreate the chart when updating the values (to speedup the things a little)
+        // and without a reset we get different colors every time the chart is redrawn
+        while (series.length > 0) series.removeIndex(0).dispose();
+        this.chart.colors.reset();
+
+        // create series
+        this.histogramsList.forEach(this.createSeries);
+
         // we assume that bins are of the same size/length
         const dataPoints = [];
         this.histogramsList.forEach((histogram, idx) =>
@@ -268,6 +215,71 @@ export default
           });
         });
         this.chart.data = dataPoints;
+      },
+      createSeries(histogram, index)
+      {
+        const lineSeries = this.chart.series.push(new am4charts.LineSeries());
+        lineSeries.dataFields.categoryX = 'category';
+        lineSeries.dataFields.valueY = 'frequency_' + index;
+        lineSeries.dataFields.counter = 'count_' + index;
+        lineSeries.name = `${histogram.startDate} - ${histogram.endDate}`;
+
+        lineSeries.tooltipText = '[' + lineSeries.stroke.hex + ']●[/] ' + lineSeries.name + ': Freq = {frequency_' + index + '.formatNumber("#.000")}, Cnt = {count_' + index + '}';
+        lineSeries.tooltip.fontSize = 12;
+        lineSeries.tooltip.background.strokeWidth = 0;
+        lineSeries.tooltip.getFillFromObject = false;
+        lineSeries.tooltip.background.fill = am4core.color('#fff');
+        lineSeries.tooltip.label.fill = am4core.color('#000');
+        // Prevent cross-fading of tooltips
+        lineSeries.tooltip.defaultState.transitionDuration = 0;
+        lineSeries.tooltip.hiddenState.transitionDuration = 0;
+
+        lineSeries.strokeWidth = 2;
+        lineSeries.strokeOpacity = 1;
+
+        // Enable interactions on series segments
+        const segment = lineSeries.segments.template;
+        segment.interactionsEnabled = true;
+
+        const hoverState = segment.states.create('hover');
+        hoverState.properties.strokeWidth = 4;
+        hoverState.properties.strokeOpacity = 1;
+
+        const dimmed = segment.states.create('dimmed');
+        dimmed.properties.strokeWidth = 2;
+        dimmed.properties.strokeOpacity = 0.2;
+
+        // Dim series on tooltip show/hide
+        lineSeries.tooltip.events.on('shown', (ev) =>
+        {
+          const hoveredSet = this.hoveredSeries;
+          hoveredSet[ev.target.targetSprite.name] = true;
+          if (Object.keys(hoveredSet).length === 1) this.processOver(ev.target.targetSprite);
+        });
+        lineSeries.tooltip.events.on('hidden', (ev) =>
+        {
+          if (!ev.target.targetSprite) return;
+          const hoveredSet = this.hoveredSeries;
+          delete hoveredSet[ev.target.targetSprite.name];
+          if (Object.keys(hoveredSet).length > 0)
+          {
+            this.chart.series.each(series =>
+            {
+              series.segments.each(segment =>
+              {
+                segment.setState(hoveredSet[series.name] ? 'hover' : 'dimmed');
+              });
+            });
+          }
+          else this.processOut();
+        });
+
+        const bullet = lineSeries.bullets.push(new am4charts.CircleBullet());
+        bullet.circle.stroke = am4core.color('#fff');
+        bullet.circle.strokeWidth = 2;
+        bullet.scale = 0;
+        const hs = bullet.states.create('hover');
+        hs.properties.scale = 1;
       },
       myColorWheel(target)
       {
