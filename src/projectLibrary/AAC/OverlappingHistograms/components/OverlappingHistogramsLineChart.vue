@@ -128,7 +128,6 @@ export default
   },
   mounted()
   {
-    this.hoveredSeries = {};
     const chart = am4core.create(this.$refs.chart, am4charts.XYChart);
     chart.maskBullets = false;
 
@@ -253,6 +252,7 @@ export default
     {
       updateChart()
       {
+        this.hoveredSeries = {};
         // we assume that bins are of the same size/length
         const dataPoints = [];
         this.histogramsList.forEach((histogram, idx) =>
