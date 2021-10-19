@@ -92,6 +92,18 @@ export default {
           devTime: "3 hours",
           comments: "",
         },
+        {
+          projectID: "AAD",
+          containerComponentName: "OverlappingHistograms",
+          developerName: "Giorgi Ghviniashvili ",
+          developerEmail: "mr.g.ghv@gmail.com",
+          developerGithub: "https://github.com/giorgi-ghviniashvili",
+          developerLinkedin: "https://www.linkedin.com/in/giorgi-ghviniashvili/",
+          projectDescription: "Overlapping Histograms",
+          projectCategory: "chart",
+          devTime: "3 hours",
+          comments: "",
+        },
       ],
     };
   },
