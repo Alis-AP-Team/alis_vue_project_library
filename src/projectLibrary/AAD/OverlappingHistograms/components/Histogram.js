@@ -195,6 +195,14 @@ function Histogram(params) {
             .style("top", tooltipY + "px")
             .style("display", "block")
             .html(attrs.tooltipHTML(stack, ij));
+
+          d3.selectAll('.histogram').each(function(d) {
+            if (d.index < stack.index) {
+              d3.select(this).attr('opacity', 0.3);
+            } else {
+              d3.select(this).attr('opacity', 1);
+            }
+          });
         }
       }
     }
@@ -337,11 +345,13 @@ function Histogram(params) {
         return d3.interpolateBlues(zScale(d.index));
       });
     tooltip.style("display", "none");
+    d3.selectAll('.histogram').attr('opacity', 1);
   }
 
   main.updateData = (newData) => {
     attrs.data = newData;
 
+    resetHighlight();
     transformData();
     setScales();
     drawAxes();
@@ -357,6 +367,7 @@ function Histogram(params) {
       setScales();
       drawAxes();
       drawContainers();
+      resetHighlight();
       drawHistograms();
     });
     return main;
