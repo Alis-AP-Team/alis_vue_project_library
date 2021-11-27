@@ -49,7 +49,7 @@
 
 <script>
 
-import testData from "./testingData/BatchContributionSector.json";
+import testData from "./testingData/AttributionSector.json";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import moment from "moment";
@@ -80,7 +80,7 @@ const dashPatterns = [
 ];
 
 export default {
-  name: "SectorContributionComparison",
+  name: "SectorAttribution",
   props: {
     config: {
       type: Object,
